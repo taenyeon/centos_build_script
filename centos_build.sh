@@ -161,9 +161,8 @@ setting_openssh() {
   install_if_not_installed sshd
 
   echo -e "\033[32m"[OPEN SSH SETTING] - EDIT /etc/ssh/sshd_config"\033[0m"
-  #cat /etc/ssh/sshd_config | grep -v '^#' | grep -E "PasswordAuthentication|PORT 22" > /dev/null || has_SSH_setting=$?
-  cat /etc/ssh/sshd_config | grep -E "#centos_build setting" >/dev/null || has_SSH_setting=$?
-  if [ -n "$has_SSH_setting" ]; then
+  cat /etc/ssh/sshd_config 2> /dev/null | grep -q "#centos_build setting"&& has_SSH_setting=1 || has_SSH_setting=0
+  if [ "$has_SSH_setting" -eq "0"  ]; then
     ssh_text="
     #centos_build setting
 PasswordAuthentication yes
@@ -329,8 +328,10 @@ start() {
   setting_vim
   setting_bash_prompt
   setting_docker
-  if [[ $need_docker_default_container_setting = true ]]; then
 
+  if [[ $need_docker_default_container_setting = true ]]; then
+  # docker setting list
+    create_container_redis
   fi
 }
 #----------------------------------------------
